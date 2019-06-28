@@ -42,6 +42,7 @@ defmodule LiveDemoWeb do
       import LiveDemoWeb.ErrorHelpers
       import LiveDemoWeb.Gettext
       alias LiveDemoWeb.Router.Helpers, as: Routes
+      import Phoenix.LiveView, only: [live_render: 2, live_render: 3]
     end
   end
 
@@ -50,6 +51,7 @@ defmodule LiveDemoWeb do
       use Phoenix.Router
       import Plug.Conn
       import Phoenix.Controller
+      import Phoenix.LiveView.Router
     end
   end
 
