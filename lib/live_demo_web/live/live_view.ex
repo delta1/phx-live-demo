@@ -1,35 +1,52 @@
 defmodule LiveDemoWeb.LiveView do
   use Phoenix.LiveView
+  alias LiveDemo.Items
+  alias Phoenix.PubSub
+  @alpha String.split("abcdef123456", "", trim: true)
 
   def render(assigns) do
     LiveDemoWeb.PageView.render("live.html", assigns)
   end
 
   def mount(_session, socket) do
-    {:ok, assign(socket, deploy_step: "Ready")}
+    # list the items
+    items = Items.list_items()
+    # subscribe to new items?
+    # Endpoint.subscribe("item:new")
+    PubSub.subscribe(LiveDemo.PubSub, "items:crud")
+    # assign
+    {:ok, assign(socket, items: items)}
   end
 
-  def handle_event("github_deploy", _value, socket) do
-    Process.send_after(self(), :create_org, 1000)
-    {:noreply, assign(socket, deploy_step: "Starting deploy...")}
+  def random_name() do
+    1..10
+    |> Enum.reduce([], fn _, acc -> [Enum.random(@alpha) | acc] end)
+    |> Enum.join("")
   end
 
-  def handle_info(:create_org, socket) do
-    Process.send_after(self(), :create_repo, 1000)
-    {:noreply, assign(socket, deploy_step: "Creating GitHub org...")}
+  def handle_event("new", _value, socket) do
+    # create a new item with a random name from our alphabet
+    Items.create_item(%{
+      name: random_name(),
+      status: Enum.random(["created", "updated", "done"])
+    })
+
+    # pubsub broadcast happens in Items context /lib/live_demo/items.ex
+    {:noreply, socket}
   end
 
-  def handle_info(:create_repo, socket) do
-    Process.send_after(self(), :push_contents, 1000)
-    {:noreply, assign(socket, deploy_step: "Creating GitHub repo...")}
+  def handle_event("change", map, socket) do
+    [id] = Map.keys(map)
+    [status] = Map.values(map)
+
+    Items.get_item!(id)
+    |> Items.update_item(%{status: status})
+
+    {:noreply, socket}
   end
 
-  def handle_info(:push_contents, socket) do
-    Process.send_after(self(), :done, 1000)
-    {:noreply, assign(socket, deploy_step: "Pushing to repo...")}
-  end
-
-  def handle_info(:done, socket) do
-    {:noreply, assign(socket, deploy_step: "Done!")}
+  def handle_info(:update, socket) do
+    items = Items.list_items()
+    {:noreply, assign(socket, items: items)}
   end
 end

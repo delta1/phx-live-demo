@@ -9,3 +9,10 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+alias LiveDemo.Repo
+alias LiveDemo.Items.Item
+
+Repo.insert!(%Item{name: "item one", status: "created"})
+Repo.insert!(%Item{name: "item two", status: "updated"})
+Repo.insert!(%Item{name: "item three", status: "done"})

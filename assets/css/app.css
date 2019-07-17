@@ -1,3 +1,11 @@
 /* This file is for your main application css. */
 
 @import "./phoenix.css";
+
+form {
+    display: inline;
+}
+
+header {
+    border: none;
+}
