@@ -7,11 +7,11 @@
             <br>
             Set status:
             <form phx-change="change">
-            <select name="<%=item.id %>">
-            <option value="created" <%= if item.status == "created" do "selected" end  %> >created</option>
-            <option value="updated" <%= if item.status == "updated" do "selected" end  %> >updated</option>
-            <option value="done" <%= if item.status == "done" do "selected" end  %> >done</option>
-            </select>
+              <select name="<%=item.id %>">
+                <option value="created" <%= if item.status == "created" do "selected" end  %> >created</option>
+                <option value="updated" <%= if item.status == "updated" do "selected" end  %> >updated</option>
+                <option value="done" <%= if item.status == "done" do "selected" end  %> >done</option>
+              </select>
             </form>
             </li>
         <% end %>
